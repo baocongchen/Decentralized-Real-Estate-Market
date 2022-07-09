@@ -173,13 +173,15 @@ contract ERC721 is Pausable, ERC165 {
 
     //    @dev Approves another address to transfer the given token ID
     function approve(address to, uint256 tokenId) public {
-        require(_tokenOwner[tokenId] != to, "This is already the owner of the token!");
-        require(
-            _tokenOwner[tokenId] == msg.sender ||
-                isApprovedForAll(_tokenOwner[tokenId], msg.sender),
-            "Not approved!"
-        );
-
+        if (_tokenOwner[tokenId] == to) {
+            revert("Unable to approve since address is owner of token!");
+        }
+        if (
+            _tokenOwner[tokenId] != msg.sender &&
+            !isApprovedForAll(_tokenOwner[tokenId], msg.sender)
+        ) {
+            revert("Not approved!");
+        }
         _tokenApprovals[tokenId] = to;
         emit Approval(_tokenOwner[tokenId], to, tokenId);
     }
@@ -286,12 +288,19 @@ contract ERC721 is Pausable, ERC165 {
     ) internal {
         // TODO: require from address is the owner of the given token
         if (_tokenOwner[tokenId] != from) {
-            revert("From address is not the owner of token");
+            revert("From address is not owner of token");
         }
-        // TODO: require token is being transfered to valid address
-        // TODO: clear approval
-        // TODO: update token counts & transfer ownership of the token ID
-        // TODO: emit correct event
+        if (to == address(0)) {
+            revert("To address is invalid!");
+        }
+
+        _clearApproval(tokenId);
+        // update token counts & transfer ownership of the token ID
+        _ownedTokensCount[to].increment();
+        _ownedTokensCount[from].decrement();
+        _tokenOwner[tokenId] = to;
+        // emit correct event
+        emit Transfer(from, to, tokenId);
     }
 
     /**
