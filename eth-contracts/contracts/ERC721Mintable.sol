@@ -3,51 +3,55 @@ pragma solidity ^0.8.7;
 
 import "openzeppelin-solidity/contracts/utils/Address.sol";
 import "openzeppelin-solidity/contracts/utils/Counters.sol";
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/utils/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/token/ERC721/IERC721Receiver.sol";
 import "./Oraclize.sol";
-error ERC721Mintable_OnlyOwnerIsAuthorized;
-error ERC721Mintable_NoTransferToSelf;
-error ERC721Mintable_MustBeRealAddress;
+error ERC721Mintable_OnlyOwnerIsAuthorized();
+error ERC721Mintable_NoTransferToSelf();
+error ERC721Mintable_MustBeRealAddress();
 
 contract Ownable {
-    event OwnershipTransferred(address indexed previousOwnerAddress, address indexed newOwnerAddress);
-    //  TODO's
-    //  1) create a private '_owner' variable of type address with a public getter function
+    event OwnershipTransferred(
+        address indexed previousOwnerAddress,
+        address indexed newOwnerAddress
+    );
     address private _owner;
 
     function getOwner() public view returns (address) {
         return _owner;
     }
 
-    //  2) create an internal constructor that sets the _owner var to the creater of the contract
     constructor() {
         _owner = msg.sender;
         emit OwnershipTransferred(_owner);
     }
 
-    //  3) create an 'onlyOwner' modifier that throws if called by any account other than the owner.
     modifier onlyOwner() {
         if (msg.sender != _owner) {
-            revert ERC721Mintable_OnlyOwnerIsAuthorized;
+            revert ERC721Mintable_OnlyOwnerIsAuthorized();
         }
         _;
     }
 
     modifier notSelfTransfer(address newOwner) {
         if (msg.sender != newOwner) {
-            revert ERC721Mintable_NoTransferToSelf;
+            revert ERC721Mintable_NoTransferToSelf();
         }
         _;
     }
 
     modifier realAddress() {
         if (msg.sender == address(0)) {
-            revert ERC721Mintable_MustBeRealAddress;
+            revert ERC721Mintable_MustBeRealAddress();
         }
     }
 
-    function transferOwnership(address newOwner) public onlyOwner realAddress notSelfTransfer(newOwner) {
+    function transferOwnership(address newOwner)
+        public
+        onlyOwner
+        realAddress
+        notSelfTransfer(newOwner)
+    {
         _owner = newOwner;
         emit OwnershipTransferred(msg.sender, newOwner);
     }
@@ -57,6 +61,7 @@ contract Pausable is Ownable {
     bool private _paused;
     event ContractIsNotPaused(address pauser);
     event ContractIsPaused(address pauser);
+
     function setPaused(bool isPause) public onlyOwner {
         _paused = isPause;
         if (_paused) {
@@ -65,9 +70,11 @@ contract Pausable is Ownable {
             emit ContractIsNotPaused(msg.sender);
         }
     }
-    constructor () internal {
+
+    constructor() internal {
         _paused = false;
     }
+
     modifier whenNotPaused() {
         if (_paused) {
             revert("contract must not be paused");
@@ -80,9 +87,7 @@ contract Pausable is Ownable {
     }
 }
 
-
 contract ERC165 is Ownable {
-    
     bytes4 private constant _INTERFACE_ID_ERC165 = 0x01ffc9a7;
     /*
      * 0x01ffc9a7 ===
@@ -105,11 +110,7 @@ contract ERC165 is Ownable {
     /**
      * @dev implement supportsInterface(bytes4) using a lookup table
      */
-    function supportsInterface(bytes4 interfaceId)
-        external
-        view
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) external view returns (bool) {
         return _supportedInterfaces[interfaceId];
     }
 
@@ -123,23 +124,11 @@ contract ERC165 is Ownable {
 }
 
 contract ERC721 is Pausable, ERC165 {
-    event Transfer(
-        address indexed from,
-        address indexed to,
-        uint256 indexed tokenId
-    );
+    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 
-    event Approval(
-        address indexed owner,
-        address indexed approved,
-        uint256 indexed tokenId
-    );
+    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
 
-    event ApprovalForAll(
-        address indexed owner,
-        address indexed operator,
-        bool approved
-    );
+    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 
     using SafeMath for uint256;
     using Address for address;
@@ -184,10 +173,7 @@ contract ERC721 is Pausable, ERC165 {
 
     //    @dev Approves another address to transfer the given token ID
     function approve(address to, uint256 tokenId) public {
-        require(
-            _tokenOwner[tokenId] != to,
-            "This is already the owner of the token!"
-        );
+        require(_tokenOwner[tokenId] != to, "This is already the owner of the token!");
         require(
             _tokenOwner[tokenId] == msg.sender ||
                 isApprovedForAll(_tokenOwner[tokenId], msg.sender),
@@ -220,11 +206,7 @@ contract ERC721 is Pausable, ERC165 {
      * @param operator operator address which you want to query the approval of
      * @return bool whether the given operator is approved by the given owner
      */
-    function isApprovedForAll(address owner, address operator)
-        public
-        view
-        returns (bool)
-    {
+    function isApprovedForAll(address owner, address operator) public view returns (bool) {
         return _operatorApprovals[owner][operator];
     }
 
@@ -273,11 +255,7 @@ contract ERC721 is Pausable, ERC165 {
      * @return bool whether the msg.sender is approved for the given token ID,
      * is an operator of the owner, or is the owner of the token
      */
-    function _isApprovedOrOwner(address spender, uint256 tokenId)
-        internal
-        view
-        returns (bool)
-    {
+    function _isApprovedOrOwner(address spender, uint256 tokenId) internal view returns (bool) {
         address owner = ownerOf(tokenId);
         return (spender == owner ||
             getApproved(tokenId) == spender ||
@@ -288,11 +266,11 @@ contract ERC721 is Pausable, ERC165 {
     // TIP: remember the functions to use for Counters. you can refresh yourself with the link above
     function _mint(address to, uint256 tokenId) internal {
         if (_exists(tokenId)) {
-            revert('The token ID already exists!');
+            revert("The token ID already exists!");
         }
         if (to == address(0)) {
-            revert("The given address is not valid!")
-            };
+            revert("The given address is not valid!");
+        }
         _tokenOwner[tokenId] = to;
         _ownedTokensCount[to].increment();
 
@@ -300,13 +278,16 @@ contract ERC721 is Pausable, ERC165 {
     }
 
     // @dev Internal function to transfer ownership of a given token ID to another address.
-  
+
     function _transferFrom(
         address from,
         address to,
         uint256 tokenId
     ) internal {
         // TODO: require from address is the owner of the given token
+        if (_tokenOwner[tokenId] != from) {
+            revert("From address is not the owner of token");
+        }
         // TODO: require token is being transfered to valid address
         // TODO: clear approval
         // TODO: update token counts & transfer ownership of the token ID
@@ -332,12 +313,7 @@ contract ERC721 is Pausable, ERC165 {
             return true;
         }
 
-        bytes4 retval = IERC721Receiver(to).onERC721Received(
-            msg.sender,
-            from,
-            tokenId,
-            _data
-        );
+        bytes4 retval = IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, _data);
         return (retval == _ERC721_RECEIVED);
     }
 
@@ -385,11 +361,7 @@ contract ERC721Enumerable is ERC165, ERC721 {
      * @param index uint256 representing the index to be accessed of the requested tokens list
      * @return uint256 token ID at the given index of the tokens list owned by the requested address
      */
-    function tokenOfOwnerByIndex(address owner, uint256 index)
-        public
-        view
-        returns (uint256)
-    {
+    function tokenOfOwnerByIndex(address owner, uint256 index) public view returns (uint256) {
         require(index < balanceOf(owner));
         return _ownedTokens[owner][index];
     }
@@ -451,11 +423,7 @@ contract ERC721Enumerable is ERC165, ERC721 {
      * @param owner address owning the tokens
      * @return uint256[] List of token IDs owned by the requested address
      */
-    function _tokensOfOwner(address owner)
-        internal
-        view
-        returns (uint256[] storage)
-    {
+    function _tokensOfOwner(address owner) internal view returns (uint256[] storage) {
         return _ownedTokens[owner];
     }
 
@@ -486,9 +454,7 @@ contract ERC721Enumerable is ERC165, ERC721 {
      * @param from address representing the previous owner of the given token ID
      * @param tokenId uint256 ID of the token to be removed from the tokens list of the given address
      */
-    function _removeTokenFromOwnerEnumeration(address from, uint256 tokenId)
-        private
-    {
+    function _removeTokenFromOwnerEnumeration(address from, uint256 tokenId) private {
         // To prevent a gap in from's tokens array, we store the last token in the index of the token to delete, and
         // then delete the last slot (swap and pop).
 
