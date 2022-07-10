@@ -573,3 +573,24 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 //      -takes in a 'to' address, tokenId, and tokenURI as parameters
 //      -returns a true boolean upon completion of the function
 //      -calls the superclass mint and setTokenURI functions
+
+contract CustomERC721Token is
+    ERC721Metadata(
+        "Decentralized Real Estate Marketplace",
+        "DREM",
+        "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/"
+    )
+{
+    function mint(
+        address to,
+        uint256 tokenId,
+        string memory tokenURI
+    ) public returns (bool) {
+        if (getOwner() != msg.sender) {
+            revert("Function is not being called by owner!");
+        }
+        super._mint(to, tokenId);
+        super.setTokenURI(tokenId);
+        return true;
+    }
+}
