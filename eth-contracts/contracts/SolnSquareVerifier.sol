@@ -42,7 +42,7 @@ contract SolnSquareVerifier is CustomERC721Token {
         bytes32 uniqueKey = keccak256(abi.encodePacked(A, B, C, INPUT));
         uniqueSolutions[uniqueKey] = Solution;
         solutionsArray.push(Solution);
-        emit solutionAdded(address1, index1);
+        emit solutionAdded(_address, _index);
     }
 
     function getSolutionsCount() external view returns (uint256) {
