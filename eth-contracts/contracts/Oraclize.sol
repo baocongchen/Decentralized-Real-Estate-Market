@@ -25,7 +25,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-pragma solidity >=0.5.0; // Incompatible compiler version - please select a compiler within the stated pragma range, or use a different version of the oraclizeAPI!
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.5.0;
 
 // Dummy contract only used to emit to end-user they are using wrong solc
 contract solcChecker {

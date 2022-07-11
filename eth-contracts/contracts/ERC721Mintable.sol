@@ -1,14 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.7;
+pragma solidity ^0.5.0;
 
 import "openzeppelin-solidity/contracts/utils/Address.sol";
-import "openzeppelin-solidity/contracts/utils/Counters.sol";
-import "openzeppelin-solidity/contracts/utils/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/drafts/Counters.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/token/ERC721/IERC721Receiver.sol";
 import "./Oraclize.sol";
-error ERC721Mintable_OnlyOwnerIsAuthorized();
-error ERC721Mintable_NoTransferToSelf();
-error ERC721Mintable_MustBeRealAddress();
 
 contract Ownable {
     event OwnershipTransferred(
@@ -28,21 +25,21 @@ contract Ownable {
 
     modifier onlyOwner() {
         if (msg.sender != _owner) {
-            revert ERC721Mintable_OnlyOwnerIsAuthorized();
+            revert("ERC721Mintable_OnlyOwnerIsAuthorized");
         }
         _;
     }
 
     modifier notSelfTransfer(address newOwner) {
         if (msg.sender != newOwner) {
-            revert ERC721Mintable_NoTransferToSelf();
+            revert("ERC721Mintable_NoTransferToSelf");
         }
         _;
     }
 
     modifier realAddress() {
         if (msg.sender == address(0)) {
-            revert ERC721Mintable_MustBeRealAddress();
+            revert("ERC721Mintable_MustBeRealAddress");
         }
     }
 
