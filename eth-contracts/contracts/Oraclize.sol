@@ -1,4 +1,3 @@
-// SPDX-License-Identifier: MIT
 /*
 
 ORACLIZE_API
@@ -25,8 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-// SPDX-License-Identifier: MIT
-pragma solidity >=0.5.0;
+pragma solidity >=0.5.0 <0.6.0; // Incompatible compiler version - please select a compiler within the stated pragma range, or use a different version of the oraclizeAPI!
 
 // Dummy contract only used to emit to end-user they are using wrong solc
 contract solcChecker {
@@ -383,8 +381,8 @@ contract usingOraclize {
     }
 
     function oraclize_setNetwork(uint8 _networkID) internal returns (bool _networkSet) {
+        _networkID; // NOTE: Silence the warning and remain backwards compatible
         return oraclize_setNetwork();
-        _networkID; // silence the warning and remain backwards compatible
     }
 
     function oraclize_setNetworkName(string memory _network_name) internal {
@@ -420,6 +418,24 @@ contract usingOraclize {
             oraclize_setNetworkName("eth_rinkeby");
             return true;
         }
+        if (getCodeSize(0xa2998EFD205FB9D4B4963aFb70778D6354ad3A41) > 0) {
+            //goerli testnet
+            OAR = OraclizeAddrResolverI(0xa2998EFD205FB9D4B4963aFb70778D6354ad3A41);
+            oraclize_setNetworkName("eth_goerli");
+            return true;
+        }
+        if (getCodeSize(0x90A0F94702c9630036FB9846B52bf31A1C991a84) > 0) {
+            //bsc mainnet
+            OAR = OraclizeAddrResolverI(0x90A0F94702c9630036FB9846B52bf31A1C991a84);
+            oraclize_setNetworkName("bsc_mainnet");
+            return true;
+        }
+        if (getCodeSize(0x816ec2AF1b56183F82f8C05759E99FEc3c3De609) > 0) {
+            //polygon mainnet
+            OAR = OraclizeAddrResolverI(0x816ec2AF1b56183F82f8C05759E99FEc3c3De609);
+            oraclize_setNetworkName("polygon_mainnet");
+            return true;
+        }
         if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475) > 0) {
             //ethereum-bridge
             OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
@@ -438,6 +454,11 @@ contract usingOraclize {
         return false;
     }
 
+    /**
+     * @dev The following `__callback` functions are just placeholders ideally
+     *      meant to be defined in child contract when proofs are used.
+     *      The function bodies simply silence compiler warnings.
+     */
     function __callback(bytes32 _myid, string memory _result) public {
         __callback(_myid, _result, new bytes(0));
     }
@@ -447,10 +468,10 @@ contract usingOraclize {
         string memory _result,
         bytes memory _proof
     ) public {
-        return;
         _myid;
         _result;
-        _proof; // Silence compiler warnings
+        _proof;
+        oraclize_randomDS_args[bytes32(0)] = bytes32(0);
     }
 
     function oraclize_getPrice(string memory _datasource)
@@ -1689,7 +1710,7 @@ contract usingOraclize {
     }
 
     /*
-     The following function has been written by Alex Beregszaszi (@axic), use it under the terms of the MIT license
+     The following function has been written by Alex Beregszaszi, use it under the terms of the MIT license
     */
     function copyBytes(
         bytes memory _from,
@@ -1714,7 +1735,7 @@ contract usingOraclize {
     }
 
     /*
-     The following function has been written by Alex Beregszaszi (@axic), use it under the terms of the MIT license
+     The following function has been written by Alex Beregszaszi, use it under the terms of the MIT license
      Duplicate Solidity's ecrecover, but catching the CALL return value
     */
     function safer_ecrecover(
@@ -1746,7 +1767,7 @@ contract usingOraclize {
     }
 
     /*
-     The following function has been written by Alex Beregszaszi (@axic), use it under the terms of the MIT license
+     The following function has been written by Alex Beregszaszi, use it under the terms of the MIT license
     */
     function ecrecovery(bytes32 _hash, bytes memory _sig)
         internal
