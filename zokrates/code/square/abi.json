@@ -12,9 +12,6 @@
     }
   ],
   "output": {
-    "type": "tuple",
-    "components": {
-      "elements": []
-    }
+    "type": "field"
   }
 }
