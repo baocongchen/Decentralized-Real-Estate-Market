@@ -21,7 +21,7 @@ contract SolnSquareVerifier is CustomERC721Token {
     mapping(bytes32 => solutions) uniqueSolutions;
 
     // event to emit when a solution is added
-    event solutionAdded(address from, uint256 index1);
+    event SolutionAdded(address from, uint256 index1);
 
     constructor(address verifier) public {
         squareVerifier = SquareVerifier(verifier);
@@ -43,7 +43,7 @@ contract SolnSquareVerifier is CustomERC721Token {
         bytes32 uniqueKey = keccak256(abi.encodePacked(A, B, C, INPUT));
         uniqueSolutions[uniqueKey] = Solution;
         solutionsArray.push(Solution);
-        emit solutionAdded(_address, _index);
+        emit SolutionAdded(_address, _index);
     }
 
     function getSolutionsCount() external view returns (uint256) {
