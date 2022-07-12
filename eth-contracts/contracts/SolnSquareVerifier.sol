@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.21 <0.6.0;
+pragma experimental ABIEncoderV2;
 import "./verifier.sol";
 import "./ERC721Mintable.sol";
 
@@ -61,7 +62,16 @@ contract SolnSquareVerifier is CustomERC721Token {
         if (uniqueSolutions[uniqueKeyCheck].solutionProvided == 1) {
             revert("Solution not unique! Must provide a new solution");
         }
-        if (!squareVerifier.verifyTx(A, B, C, INPUT)) {
+        if (
+            !squareVerifier.verifyTx(
+                Verifier.Proof(
+                    Pairing.G1Point(A[0], A[1]),
+                    Pairing.G2Point([B[0][0], B[0][1]], [B[1][0], B[1][1]]),
+                    Pairing.G1Point(C[0], C[1])
+                ),
+                INPUT
+            )
+        ) {
             revert("Solution wrong! Must provide a correct solution");
         }
         addSolution(ID, msg.sender, A, B, C, INPUT);
