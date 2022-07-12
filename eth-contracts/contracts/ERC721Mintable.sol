@@ -18,7 +18,7 @@ contract Ownable {
         return _owner;
     }
 
-    constructor() {
+    constructor() internal {
         _owner = msg.sender;
         emit OwnershipTransferred(_owner);
     }
@@ -41,6 +41,7 @@ contract Ownable {
         if (msg.sender == address(0)) {
             revert("ERC721Mintable_MustBeRealAddress");
         }
+        _;
     }
 
     function transferOwnership(address newOwner)
@@ -76,11 +77,13 @@ contract Pausable is Ownable {
         if (_paused) {
             revert("contract must not be paused");
         }
+        _;
     }
     modifier paused() {
         if (!_paused) {
             revert("contract must be paused");
         }
+        _;
     }
 }
 
@@ -569,11 +572,7 @@ contract CustomERC721Token is
         "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/"
     )
 {
-    function mint(
-        address to,
-        uint256 tokenId,
-        string memory tokenURI
-    ) public returns (bool) {
+    function mint(address to, uint256 tokenId) public returns (bool) {
         if (getOwner() != msg.sender) {
             revert("Function is not being called by owner!");
         }

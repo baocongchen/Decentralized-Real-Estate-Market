@@ -50,7 +50,7 @@ contract SolnSquareVerifier is CustomERC721Token {
     }
 
     // function to mint new NFT when solution has been verified
-    function mint(
+    function mintToken(
         uint256[2] memory A,
         uint256[2][2] memory B,
         uint256[2] memory C,
