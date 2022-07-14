@@ -1,3 +1,14 @@
+# Testing Methods
+
+-   Clone the project
+-   Run npm install
+-   cd eth-contracts
+-   Run truffle test
+
+# ABI code
+
+Can be found at https://github.com/baocongchen/Decentralized-Real-Estate-Market/blob/main/eth-contracts/build/contracts/SolnSquareVerifier.json
+
 # Migration Info
 
 ## Starting migrations...
