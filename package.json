@@ -12,12 +12,15 @@
   "author": "Pete Tran",
   "license": "MIT",
   "devDependencies": {
-    "lite-server": "2.4.0"
+    "dotenv": "^16.0.1",
+    "lite-server": "2.4.0",
+    "truffle-contract": "^4.0.31",
+    "truffle-plugin-verify": "^0.5.26"
   },
   "dependencies": {
     "@truffle/hdwallet-provider": "^1.2.10",
     "openzeppelin-solidity": "^2.2.0",
-    "solc": "^0.5.2",
+    "solc": "^0.5.17",
     "solc-js": "^0.5.2"
   }
 }

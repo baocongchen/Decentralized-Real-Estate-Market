@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.4.21 <0.6.0;
+pragma solidity 0.5.17;
 pragma experimental ABIEncoderV2;
 import "./verifier.sol";
 import "./ERC721Mintable.sol";
@@ -21,7 +21,7 @@ contract SolnSquareVerifier is CustomERC721Token {
     mapping(bytes32 => solutions) uniqueSolutions;
 
     // event to emit when a solution is added
-    event SolutionAdded(address from, uint256 index1);
+    event SolutionAdded(address from, uint256 index);
 
     constructor(address verifier) public {
         squareVerifier = SquareVerifier(verifier);
