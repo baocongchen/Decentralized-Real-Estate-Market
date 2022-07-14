@@ -1,3 +1,7 @@
+# Link to OpenSea
+
+https://testnets.opensea.io/collection/decentralized-real-estate-marketplace-6sbhwvqz4k
+
 # Testing Methods
 
 -   Clone the project
